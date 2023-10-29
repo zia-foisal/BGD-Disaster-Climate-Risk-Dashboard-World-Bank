@@ -1,0 +1,421 @@
+---
+title: "Data Preparation"
+author: "Md Zia Uddin Foisal"
+date: "2023-10-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Set the Working Directory
+setwd("E:/Bangladesh-CCDR-World-Bank/")
+
+#Remove everything that is in the workspace
+rm(list=ls())
+```
+
+
+```{r, echo=FALSE, warning=FALSE}
+#Utils
+library(readr)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(sf)
+library(stringr)
+library(glue)
+library(janitor)
+library(rio)
+library(readxl)
+# remotes::install_github("Ebukin/devPTIpack")
+library(devPTIpack)
+library(stringr)
+```
+
+##Read the administrative boundaries
+
+```{r}
+#District and Upazila BBS
+
+bgd_adm0 <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM0") %>% 
+  clean_names()
+
+division_shp <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM1")%>%
+  rename(division = ADM1_NAME) %>% 
+  clean_names()
+
+district_shp <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM2") %>%
+  rename(division = ADM1_NAME, district = ADM2_NAME) %>% 
+  clean_names()
+  
+upazila_shp <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM3") %>% 
+  rename(division = ADM1_NAME , district = ADM2_NAME, upazila = ADM3_NAME) %>% 
+  clean_names()
+
+```
+
+##Preparing the Diaster and Climate Risk Data
+
+```{r}
+#Reading Data
+#Natural Hazard Data
+natural_hazards <- rio::import_list("./CCDR_Dashboard/raw_data/BGD_RSK_23.xlsx")
+
+hazards_district <- natural_hazards[["ADM2_summary"]] %>% 
+  as_tibble()%>% 
+  rename(division = ADM1_NAME, district = ADM2_NAME) %>% 
+  #select(-ADM0_CODE, -ADM0_NAME, -ADM1_CODE, -ADM2_CODE) %>% 
+  rename(dist_population = ADM2_POP) %>% 
+  mutate(dist_population = dist_population/1000) %>% 
+  pivot_longer(dist_population:`DR_S1_50p_mean` ,names_to = "indicator", values_to = "value") %>% 
+  mutate(polygon = "District") %>% 
+  arrange(district) %>% 
+  mutate(value = case_when(
+    indicator = str_detect(indicator, "%") ~ value*100,
+    TRUE ~ value
+  ))%>% 
+  clean_names()
+
+hazards_upazila <- natural_hazards[["ADM3_summary"]]%>% 
+  as_tibble() %>% 
+  #select(-ADM0_CODE, -ADM1_CODE, -ADM2_CODE, -ADM3_CODE, -ADM0_NAME) %>% 
+  rename(division = ADM1_NAME , district = ADM2_NAME, upazila = ADM3_NAME) %>%
+  rename(upazila_poplation = ADM3_POP) %>% 
+  mutate(upazila_poplation = upazila_poplation/1000) %>%
+  pivot_longer(upazila_poplation:`DR_S1_50p_mean` ,names_to = "indicator", values_to = "value") %>% 
+  mutate(polygon = "Upazila") %>% 
+  arrange(upazila) %>% 
+  mutate(value = case_when(
+    indicator = str_detect(indicator, "%") ~ value*100,
+    TRUE ~ value
+  )) %>% 
+  clean_names()
+
+#Matching Upazila Names with official boundary
+upazila_1 <- upazila_shp$upazila
+
+# hazards_upazila <- hazards_upazila %>%
+#   bind_cols(upazila1= upazila_1) %>% 
+#   select(-upazila) %>% 
+#   rename(upazila = upazila1)
+
+
+hazards <- bind_rows(hazards_district, hazards_upazila) %>% 
+  mutate(domain = "Natural Hazards")
+```
+
+##Bringing Relative Wealth Index
+
+
+```{r}
+##Bringing in Relative Wealth Indices at district and Upazila level
+
+rwi_data <- import_list("/CCDR_Dashboard/raw_data/BGD_RWI_summary.xlsx")
+
+#district rwi 
+rwi_district <- rwi_data$ADM2_RWI_mean %>% 
+  pivot_longer(rwi_mean, names_to = "indicator", values_to = "value") %>% 
+  mutate(polygon = "District", domain = "Relative Wealth Index") %>% 
+  arrange(district)
+  
+#Upazila rwi
+rwi_upazila <- rwi_data$ADM3_RWI %>% 
+  pivot_longer(rwi_mean, names_to = "indicator", values_to = "value") %>%
+  mutate(polygon = "Upazila", domain = "Relative Wealth Index") %>% 
+  arrange(upazila)
+
+#rwi_combined
+rwi_final <- 
+  bind_rows(rwi_district, rwi_upazila)
+
+
+legend <- natural_hazards[["Legend"]] %>% 
+  as_tibble()
+```
+
+
+##Preparing the Socio-economic data
+
+
+```{r}
+# #Socio-economic Indicator
+
+development_indicators <- readxl::read_excel("/CCDR_Dashboard/raw_data/socioeconomic_indicators_for_bgd_dash_1.xlsx", na="NA")
+
+development_indicators$indicator_1 <- lapply(development_indicators$indicator_1 , str_trim)
+development_indicators$polygon <- "District"
+
+
+#since Division is missing in development indicators, bringing in division
+# prov <- district_shp %>% 
+#   as_tibble() %>% 
+#   select(division, district)
+
+development_indicators <- development_indicators %>%
+  mutate(domain = "Development Outcomes") %>%
+  arrange(district)
+```
+
+##Combinning all the dataset
+
+```{r}
+#Combining all data
+data <- hazards %>% 
+  bind_rows(development_indicators) %>% 
+  bind_rows(rwi_final) %>% 
+  mutate(value = 
+           case_when(
+          domain == "Development Outcomes" ~ round(value, 2),
+          domain == "Natural Hazards" ~ round(value, 2),
+          domain == "Relative Wealth Index" ~ round(value, 2)
+          )
+  )
+```
+
+
+```{r}
+unique_names_data <- data %>%
+  distinct(indicator, indicator_1, unit,	source)
+
+sdg_meta <- readxl::read_excel("/CCDR_Dashboard/raw_data/sdg_plus_metadata_glossary.xlsx")
+
+unique_names_data$definition <- sdg_meta$Definition[match(unique_names_data$indicator, sdg_meta$Indicators_short_name)]
+
+#write.csv(unique_names_data, "./CCDR_Dashboard/raw_data/legend_bgd_data_3.csv", row.names = FALSE)
+```
+
+
+```{r}
+#Reading in Color mapping file for data Join
+legend_data <- readxl::read_excel("./CCDR_Dashboard/raw_data/legend_bgd_data.xlsx", na= " ") %>%
+  mutate(unit = replace_na(unit, ""))
+
+
+data$unit <- legend_data$unit[match(data$indicator, legend_data$indicator)]
+data$indicator_1 <- legend_data$indicator_1[match(data$indicator, legend_data$indicator)]
+data$source <- legend_data$source[match(data$indicator, legend_data$indicator)]
+data$context <- legend_data$context[match(data$indicator, legend_data$indicator)]
+data$definition <- legend_data$definition[match(data$indicator, legend_data$indicator)]
+
+
+data %>%
+  mutate(value = case_when(
+    indicator == "Total population in the division (in thousands)" ~ round(value, 0),
+    indicator == "Total population in the district (in thousands)" ~ round(value, 0),
+    indicator == "Total population in the upazila (in thousands)" ~ round(value, 0),
+    indicator == "Expected annual mortality due to river floods (population count)" ~ round(value, 0),
+    indicator == "Expected annual mortality due to coastal floods (population count)" ~ round(value, 0),
+    indicator == "Expected annual exposure of population to extreme heat stress hazard (population count)" ~ round(value, 0)
+    ))
+    # indicator == "Expected annual exposure of population to very strong heat stress hazard (population count)" ~ round(value, 0),
+    # indicator == "Population exposed to landslide hazard (population count)" ~ round(value, 0), TRUE ~ value ))
+
+
+write_rds(data, file = "E:/RDL - Bangladesh Integrated Spatial Database/data_prep_bisd/Final RDS V1/data.RDS")
+```
+
+#Check the duplicates in the dataset
+
+```{r}
+duplicate <- {data} %>%
+    dplyr::group_by(district, upazila, indicator_1) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+    dplyr::filter(n > 1L)
+```
+
+
+
+##Writing the Bangladesh Boundary data in RDS format
+
+```{r}
+bgd_shp <- list(District = district_shp, Upazila = upazila_shp)
+bgd_shp %>% write_rds("/CCDR_Dashboard/data/bgd_shp.RDS")
+
+```
+
+```{r}
+# bgd_pca <- data %>%
+#   filter(polygon == "District")%>%
+#   pivot_wider(id_cols = c("district"),
+#     names_from = indicator_1,
+#               values_from = value)
+
+```
+
+bgd_pca <- data %>%
+  pivot_wider(names_from = indicator_1,
+              values_from = value,
+              id_cols = c("district", "upazila"),
+              values_fn = {mean})
+
+```{r}
+library(sf)
+
+bgd_adm2 <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM2")
+
+
+# bgd_indicators <- left_join(bgd_adm2, bgd_pca, by = c("adm2_en" = "district")) %>%
+#   mutate(admin2Pcod = paste0("Bangladesh", bgd_adm2$adm2_pcode)) %>% 
+#   mutate(admin0Pcod = bgd_adm2$adm0_en) %>%
+#   mutate(admin2Name = bgd_adm2$adm2_en)
+
+#write_xlsx(bgd_indicators, "E:\\RDL - Bangladesh Integrated Spatial Database\\data_prep_bisd\\bgd_indicators.xlsx")
+
+```
+
+
+```{r}
+bgd_shp_district_PTI <- bgd_adm2 %>%
+  mutate(admin2Pcod = paste0("Bangladesh", bgd_adm2$adm2_pcode)) %>% 
+  mutate(admin0Pcod = bgd_adm2$adm0_en) %>%
+  mutate(admin2Name = bgd_adm2$adm2_en)%>%
+  select(admin0Pcod, admin2Pcod, admin2Name, geom)
+
+
+#Making a List
+bgd_shp <- list(admin2_District = bgd_shp_district_PTI)
+
+bgd_shp <- 
+  bgd_shp %>% 
+  map(~{.x %>% st_transform("+proj=longlat +datum=WGS84")})
+
+## https://stackoverflow.com/questions/68478179/how-to-resolve-spherical-geometry-failures-when-joining-spatial-data
+sf_use_s2(FALSE)
+
+bgd_shp$admin0_Country <-
+  bgd_shp$admin2_District %>% 
+  group_by(admin0Pcod) %>% 
+  summarise() %>% 
+  mutate(admin0Name = "Bangladesh") %>% 
+  st_make_valid()
+
+
+pti_shps <- NULL
+pti_shps$admin0_Country  <- bgd_shp$admin0_Country 
+pti_shps$admin2_District <- bgd_shp$admin2_District
+
+
+pti_shps %>% 
+  write_rds("E:/RDL - Bangladesh Integrated Spatial Database/data_prep_bisd/Final RDS V1/bgd_geometries.RDS", compress = "gz")
+
+pti_shps$admin0_Country %>% st_crs(4326)
+pti_shps$admin1_District %>% st_crs(4326)
+
+#validate_geometries(pti_shps)
+```
+
+
+
+
+
+```{r}
+pivoted_df <- development_indicators %>%
+  select(division, district, indicator_1, value ) %>% 
+  pivot_wider(names_from = indicator_1,
+              values_from = value)
+
+bgd_indicators <- left_join(bgd_adm2, pivoted_df, by = c("adm2_en" = "district")) %>%
+  mutate(admin2Pcod = paste0("Bangladesh", bgd_adm2$adm2_pcode)) %>% 
+  mutate(admin0Pcod = bgd_adm2$adm0_en) %>%
+ mutate(admin2Name = bgd_adm2$adm2_en)
+
+write_xlsx(bgd_indicators, "E:\\RDL - Bangladesh Integrated Spatial Database\\data_prep_bisd\\Data Updated 24October\\bgd_indicators.xlsx")
+```
+
+
+
+##Writing climate meta data
+```{r}
+###Metadata for PTI
+metadata_climate <- import_list("E:/RDL - Bangladesh Integrated Spatial Database/data_prep_bisd/Data Updated 24October/Bgd_meta_data_climate.xlsx")
+#devPTIpack::validate_metadata(metadata_climate)
+
+metadata_climate %>% 
+  write_rds("E:/RDL - Bangladesh Integrated Spatial Database/data_prep_bisd/Final RDS V1/bgd_metadata_climate.RDS")
+```
+
+
+##PTI shapfile Preparation
+
+```{r}
+# #PTI Shapefile preparation
+# 
+# nums1 <- seq(1:8)
+# nums1 <- paste0(0, nums1)
+# 
+# nums2 <- as.character(seq(10,64)) 
+# 
+# #Concatenating together
+# nums <- c(nums1, nums2)
+# 
+# bgd_shp_district_PTI <- st_read("data/shapefile_district/bgd_indicators.shp") %>% 
+#   st_as_sf() %>% 
+#   clean_names() %>% 
+#   select(division, district, geometry) %>% 
+#   arrange(district) %>% 
+#   rename(admin1Name = division)  %>% 
+#   mutate(admin1Pcod = paste0("Bangladesh", nums)) %>% 
+#   mutate(admin0Pcod = "Bangladesh") %>% 
+#   select(admin0Pcod, admin1Pcod, admin1Name, geometry)
+# 
+# #Making a List
+# bgd_shp <- list(admin2_District = bgd_shp_district_PTI)
+# 
+# bgd_shp <- 
+#   bgd_shp %>% 
+#   map(~{.x %>% st_transform("+proj=longlat +datum=WGS84")})
+# 
+# ## https://stackoverflow.com/questions/68478179/how-to-resolve-spherical-geometry-failures-when-joining-spatial-data
+# sf_use_s2(FALSE)
+# 
+# bgd_shp$admin0_Country <-
+#   bgd_shp$admin2_District %>% 
+#   group_by(admin0Pcod) %>% 
+#   summarise() %>% 
+#   mutate(admin0Name = "Bangladesh") %>% 
+#   st_make_valid()
+# 
+# 
+# pti_shps <- NULL
+# pti_shps$admin0_Country  <- bgd_shp$admin0_Country 
+# pti_shps$admin2_District <- bgd_shp$admin2_District
+# 
+# 
+# pti_shps %>% write_rds("./CCDR_Dashboard/data/bgd_geometries.rds", compress = "gz")
+# 
+# pti_shps$admin0_Country %>% st_crs()
+# pti_shps$admin2_District %>% st_crs()
+# 
+# validate_geometries(pti_shps)
+```
+
+##Preparing data for PCA
+
+```{r}
+
+#For pca (Using the data for PTI in wide format)
+#Using data in original format 
+metadata_climate <- import_list("./CCDR_Dashboard/raw_data/Bgd_meta_data_climate.xlsx")
+
+data_pca <- metadata_climate$admin2_District
+data_pca %>% 
+  write_rds("./CCDR_Dashboard/data/data_pca.RDS")
+
+```
+
+
+
+
+```{r}
+legend_rds <- metadata_climate[["metadata"]]
+write_rds(legend_rds, "./CCDR_Dashboard/data/legend.RDS")
+```
+
+
+```{r}
+district <- read.csv("./CCDR_Dashboard/raw_data/district.csv")
+write_rds(legend_rds, "./CCDR_Dashboard/data/district.RDS")
+```
