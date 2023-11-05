@@ -20,5 +20,5 @@ Data and documentations for this work can be found in details in the following d
  
 ## License
 
-The <span style="color:#3EACAD">template</span> is licensed under the [**World Bank Master Community License Agreement**](LICENSE). Remember to replace the [license](LICENSE.md) if necessary. If open source, [choose an open source license](https://choosealicense.com).  
+The <span style="color:#3EACAD">template</span> is licensed under the [**World Bank Master Community License Agreement**](LICENSE).  
 ![WorldBank](https://github.com/zia-foisal/Bangladesh-CCDR-World-Bank/blob/main/CCDR_Dashboard/www/worldbank_logo.jpg)
