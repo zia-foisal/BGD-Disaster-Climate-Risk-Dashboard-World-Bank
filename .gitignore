@@ -34,9 +34,13 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 #Raw Data Folder
-.gpkg
-.xlsx
+*.gpkg
+*.xlsx
 
 #Data Folder
-.RDS
-.rds
+*.RDS
+*.rds
+
+#html file
+.htm
+.html
