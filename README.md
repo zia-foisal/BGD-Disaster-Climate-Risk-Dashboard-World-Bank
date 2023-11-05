@@ -12,8 +12,10 @@ The analytics in this dashboard zoom in to the level of granular administrative 
 Where available, an impact function is added to the exposure variables,to demonstrate the expected annual impact on population health in terms of morbidity and mortality, the potential damage to built-up assets and to agricultural land. Vulnerability is then captured by a series of", **socioeconomic indicators and development outcomes**, tailored to specific hazards.
 
 ## Documentations
+
+Data and documentations for this work can be found in details in the following documents -  
 - [Bangladesh CCDR Report](https://www.worldbank.org/en/publication/country-climate-development-reports)  
-- [Climate & Disaster Risk Screening Tools](https://gfdrr.github.io/CCDR-tools/home.html)  
+- [Climate & Disaster Risk Screening Tools - GFDRR](https://gfdrr.github.io/CCDR-tools/home.html)  
 - [Risk Data Library Standard](https://docs.riskdatalibrary.org/en/latest/)  
  
 ## License
