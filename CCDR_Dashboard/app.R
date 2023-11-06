@@ -71,30 +71,38 @@ domain_options <- data %>%
 spatial_level <- unique(data$polygon)
 
 #Listed Indicator Options
-indicator_listed = (list(`River flooding` = list("Expected mortality from river floods (population count)", 
-                                                 "Expected mortality from river floods (% of population)", 
-                                                 "Expected damage on builtup from river floods (hectares)", 
-                                                 "Expected damage on builtup from river floods (% of builtup)", 
-                                                 "Expected damage on agricultural land from river floods (hectares)"), 
-                                                # "Expected exposure of agricultural land to river floods (% of ADM agricultural land)"),
-                         `Coastal flooding` = list("Expected mortality from coastal floods (population count)", 
-                                                   "Expected mortality from coastal floods (% of population)",
-                                                   "Expected annual impact on builtup area due to coastal floods (hectares)", 
-                                                   "Expected annual impact on builtup area due to coastal floods (% of builtup)"),
-                         `Landslides` = list("Population exposed to landslide hazard (population count)", 
-                                             "Builtup exposed to landslide hazard (Builtup count)"),
-                         `Drought` = list("Frequency of agricultural stress affecting at least 30% of arable land during Season 1 (percentage of historical period 1984-2022)",
-                                          "Frequency of agricultural stress affecting at least 30% of arable land during Season 2 (percentage of historical period 1984-2022)" ),
-                         `Heat stress` = list("Expected annual exposure of population to very strong heat stress hazard (population count)"),
-                         `Air pollution`= list("Expected increse of mortality from air pollution (population count)"),
-                         `Tropical Cyclone` = list(" Expected annual impact on builtup area due to tropical cyclone (hectares)",
-                                                   "Expected annual impact on builtup area due to tropical cyclone (% of builtup)"),
-                         `Demography` = list("Total number of population in the district (count)", 
-                                             "Total number of population in the Upazila (count)"),
-                         `Agriculture & Built-up Area` = list("Total builtup area in the district (hectares)",
-                                                              "Total  agricultural land in the district (hectares)", 
-                                                              "Total builtup area in the Upazila (hectares)",
-                                                              "Total  agricultural land in the upazila (hectares)"),
+indicator_listed = (list(`River flooding` = list("Expected annual impact on builtup area due to river floods (hectares)",
+                                                 "Expected annual impact on builtup area due to river floods (relative)",
+                                                 "Expected annual mortality due to river floods (population count)",
+                                                 "Expected annual mortality due to river floods (relative)",
+                                                 "Expected annual exposure of agricultural land to river floods (hectares)",
+                                                 "Expected annual exposure of agricultural land to river floods (relative)"),
+                         `Coastal flooding` = list("Expected annual impact on builtup area due to coastal floods (hectares)",
+                                                   "Expected annual impact on builtup area due to coastal floods (relative)",
+                                                   "Expected annual mortality due to coastal floods (population count)",
+                                                   "Expected annual mortality due to coastal floods (relative)",
+                                                   "Expected annual exposure of agricultural land to coastal floods (hectares)",
+                                                   "Expected annual exposure of agricultural land to coastal floods (relative)"),
+                         # `Landslides` = list("Population exposed to landslide hazard (population count)", 
+                         #                     "Builtup exposed to landslide hazard (Builtup count)"),
+                         `Drought` = list("Frequency of agricultural land exposed to drought affecting at least 30% of arable land during period 1984-2022 (growing season 1)",
+                                          "Frequency of agricultural land exposed to drought affecting at least 50% of arable land during period 1984-2022 (growing season 1)" ),
+                         `Heat stress` = list("Expected annual exposure of population to extreme heat stress hazard (population count)",
+                                              "Expected annual exposure of population to extreme heat stress hazard (relative)"),
+                         #`Air pollution`= list("Expected increse of mortality from air pollution (population count)"),
+                         `Tropical Cyclone` = list("Expected annual impact on builtup area due to tropical cyclone (hectares)",
+                                                   "Expected annual impact on builtup area due to tropical cyclone (relative)"),
+                         `Demography` = list(
+                           "Number of Population in the division ( in thousands)",
+                           "Number of Population in the district ( in thousands)",
+                           "Number of Population in the upazila ( in thousands)"
+                         ),
+                         `Agriculture & Built-up Area` = list("Total builtup Area in the division (hectares)",
+                                                              "Total builtup Area in the district (hectares)",
+                                                              "Total builtup Area in the upazila (hectares)",
+                                                              "Total agricultural land in the division (hectares)",
+                                                              "Total agricultural land in the district (hectares)",
+                                                              "Total agricultural land in the upazila (hectares)"),
                          `Relative Wealth Index` = list('Mean Relative Wealth Index')))
 
 
@@ -174,20 +182,25 @@ ui <- function(request){
                                                          ),
                                                          conditionalPanel(
                                                            condition = 
-                                            "input.indicator_map !== 'Expected mortality from coastal floods (population count)'&&
-                                             input.indicator_map !== 'Expected mortality from coastal floods (% of population)'&&
-                                             input.indicator_map !== 'Expected annual impact on builtup area due to coastal floods (hectares)' &&
-                                             input.indicator_map !== 'Expected annual impact on builtup area due to coastal floods (% of builtup)'&&
-                                             input.indicator_map !== 'Expected annual exposure of population to very strong heat stress hazard (population count)'&&
-                                             input.indicator_map !== 'Expected increse of mortality from air pollution (population count)'&&
-                                             input.indicator_map !== 'Builtup exposed to landslide hazard (Builtup count)'&&
-                                             input.indicator_map !== 'Population exposed to landslide hazard (population count)'&&
-                                             input.indicator_map !== 'Expected annual impact on builtup area due to tropical cyclone (hectares)'&&
-                                             input.indicator_map !== 'Expected annual impact on builtup area due to tropical cyclone (% of builtup)'&&
-                                             input.indicator_map !== 'Expected mortality from river floods (% of population)'&&
-                                             input.indicator_map !== 'Expected mortality from river floods (population count)'&&
-                                             input.indicator_map !== 'Expected damage on agricultural land from river floods (hectares)'&&
-                                             input.indicator_map !== 'Expected damage on builtup from river floods (hectares)'",      
+                                                             "input.indicator_map !== 'Expected annual mortality due to coastal floods (population count)'&&
+input.indicator_map !== 'Expected annual mortality due to coastal floods (relative)'&&
+input.indicator_map !== 'Expected annual impact on builtup area due to coastal floods (relative)' &&
+input.indicator_map !== 'Expected annual mortality due to coastal floods (relative)'&&
+input.indicator_map !== 'Expected annual exposure of agricultural land to coastal floods (hectares)' &&
+input.indicator_map !== 'Expected annual exposure of agricultural land to coastal floods (relative)'&&
+input.indicator_map !== 'Expected annual exposure of population to extreme heat stress hazard (population count)'&&
+input.indicator_map !== 'Expected annual exposure of population to extreme heat stress hazard (relative)'&&
+#input.indicator_map !== 'Expected increse of mortality from air pollution (population count)'&&
+#input.indicator_map !== 'Builtup exposed to landslide hazard (Builtup count)'&&
+#input.indicator_map !== 'Population exposed to landslide hazard (population count)'&&
+input.indicator_map !== 'Expected annual impact on builtup area due to tropical cyclone (hectares)'&&
+input.indicator_map !== 'Expected annual impact on builtup area due to tropical cyclone (relative)'&&
+input.indicator_map !== 'Expected annual mortality due to river floods (population count)'&&
+input.indicator_map !== 'Expected annual mortality due to river floods (relative)'&&
+input.indicator_map !== 'Expected annual impact on builtup area due to river floods (hectares)'&&
+input.indicator_map !== 'Expected annual impact on builtup area due to river floods (relative)', &&
+input.indicator_map !== 'Expected annual exposure of agricultural land to river floods (hectares)'&&
+input.indicator_map !== 'Expected annual exposure of agricultural land to river floods (relative)'",        
                                                            
                                                            numericInput("bins",
                                                                         "Choose Number of Bins",
@@ -571,15 +584,13 @@ should be targeted.")),
                                           tags$hr(),
                                           
                                           tags$p(tags$em(tags$b("For further information and questions or suggestions, please reach out to:"))),
-                                          
-                                          # tags$p(<a href="mailto:afinn1@worldbank.org">afinn1@worldbank.org</a>),
                                           tags$p("Pierre Chrzanowski, Disaster Risk Management Specialist, GFDRR, World Bank  -",  tags$b(tags$a(href="mailto:pchrzanowski@worldbank.org", "pchrzanowski@worldbank.org"))),
                                           tags$p("Stuart Alexander Fraser , Lead Disaster Risk Management Consultant, GFDRR, World Bank   -",  tags$b(tags$a(href="mailto:sfraser@worldbank.org", "sfraser@worldbank.org"))),
-                                          tags$p("Lander Bosch, Regional Geographer/YP    -",  tags$b(tags$a(href="mailto:lbosch@worldbank.org", "lbosch@worldbank.org"))),
+                                          # tags$p("Lander Bosch, Regional Geographer/YP    -",  tags$b(tags$a(href="mailto:lbosch@worldbank.org", "lbosch@worldbank.org"))),
                                           tags$p("Mattia Amadio, Disaster Risk Management Consultant, GFDRR, World Bank -",  tags$b(tags$a(href="mailto:mamadio@worldbank.org", "mamadio@worldbank.org"))),
                                           tags$p("Nuala Margaret Cowan, Disaster Risk Management Consultant, GFDRR, World Bank -",  tags$b(tags$a(href="mailto:ncowan@worldbank.org", "ncowan@worldbank.org"))),
                                           tags$p("Andrea Garcia Tapia, Data Science & Community Manager, GFDRR, The World Bank -",  tags$b(tags$a(href="mailto:agarciatapia@worldbank.org", "agarciatapia@worldbank.org"))),
-                                          tags$p("Sergio Olivieri, Senior Economist, Statistician, Poverty and Equity Global Practice, World Bank -",  tags$b(tags$a(href="mailto:solivieri@worldbank.org", "solivieri@worldbank.org"))),
+                                          tags$p("Sergio Olivieri, Senior Economist and Statistician, Poverty and Equity Global Practice, World Bank -",  tags$b(tags$a(href="mailto:solivieri@worldbank.org", "solivieri@worldbank.org"))),
                                           tags$p("Ayago Wambile, Senior Economist , Poverty and Equity Global Practice, World Bank -",  tags$b(tags$a(href="mailto:awambile@worldbank.org", "awambile@worldbank.org"))),
                                           tags$p("Bernard Haven, Senior Economist, MTI Global Practice, World Bank  -",  tags$b(tags$a(href="mailto:bhaven@worldbank.org", "bhaven@worldbank.org"))),
                                           tags$p("Md Zia Uddin Foisal, Disaster and Climate Risk Data Fellow, GFDRR, World Bank -",  tags$b(tags$a(href="mailto:mfoisal@worldbank.org", "mfoisal@worldbank.org"))),
@@ -615,7 +626,7 @@ should be targeted.")),
                                    tags$hr(),
                                    h4(strong("Github Repository")),
                                    br(),
-                                   tags$a(href= "https://github.com/GFDRR/CCDR-tools", "Repo Link", target="_blank"), br(),
+                                   tags$a(href= "https://github.com/zia-foisal/Bangladesh-CCDR-World-Bank", "Repo Link", target="_blank"), br(),
                                    
                                    
                                  )),

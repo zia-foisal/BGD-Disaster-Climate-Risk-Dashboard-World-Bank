@@ -4,7 +4,7 @@
 output$download_nat <- downloadHandler(
   filename = "Natural_Hazards.xlsx",
   content = function(file){
-    file.copy("www/Pakistan_Natural Hazard Exposure and Impact_Districts Tehsils.xlsx", file)
+    file.copy("www/Pakistan_Natural Hazard Exposure and Impact_Districts Upazila.xlsx", file)
   }
 )
 
