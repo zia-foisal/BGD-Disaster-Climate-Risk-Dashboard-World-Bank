@@ -113,7 +113,8 @@ observeEvent(input$domain_map,{   #Latest to stop upazila option to show up in d
                    )
                    }
                  else if(input$polygon_map == "Upazila" & input$domain_map == "Natural Hazards"){
-                   upa_haz_choices = (list(`River flooding` = list("Expected annual impact on builtup area due to river floods (hectares)",
+                   upa_haz_choices = (list(
+                     `River flooding` = list("Expected annual impact on builtup area due to river floods (hectares)",
                                                                    "Expected annual impact on builtup area due to river floods (relative)",
                                                                    "Expected annual mortality due to river floods (population count)",
                                                                    "Expected annual mortality due to river floods (relative)",
