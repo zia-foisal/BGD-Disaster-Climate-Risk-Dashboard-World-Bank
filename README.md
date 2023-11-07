@@ -15,8 +15,8 @@ Where available, an impact function is added to the exposure variables,to demons
 ## Documentations
 Data and documentations for this work can be found in details in the following documents -  
 - [World Bank Country Climate and Development Report](https://www.worldbank.org/en/publication/country-climate-development-reports)  
-- [World Bank Climate Change Knowledge](https://climateknowledgeportal.worldbank.org/country/bangladesh)
-- [ GFDRR, World Bank Climate & Disaster Risk Screening Tools](https://gfdrr.github.io/CCDR-tools/home.html)  
+- [World Bank Climate Change Knowledge Portal](https://climateknowledgeportal.worldbank.org/country/bangladesh)
+- [ GFDRR Climate & Disaster Risk Screening Tools](https://gfdrr.github.io/CCDR-tools/home.html)  
 - [Risk Data Library Standard](https://docs.riskdatalibrary.org/en/latest/)  
  
 ## License
