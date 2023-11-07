@@ -51,28 +51,34 @@ observeEvent(input$domain_map2,{
 observeEvent(input$domain_map2,{
 observeEvent(input$polygon_map2,{
   if(input$polygon_map2 == "District" & input$domain_map2 == "Natural Hazards"){
-    dis_haz_choices_c3 = (list(`River flooding` = list("Expected mortality from river floods (population count)", 
-                                                       "Expected mortality from river floods (% of population)", 
-                                                       "Expected damage on builtup from river floods (hectares)", 
-                                                       "Expected damage on builtup from river floods (% of builtup)", 
-                                                       "Expected damage on agricultural land from river floods (hectares)"), 
-                               # "Expected exposure of agricultural land to river floods (% of ADM agricultural land)"),
-                               `Coastal flooding` = list("Expected mortality from coastal floods (population count)", 
-                                                         "Expected mortality from coastal floods (% of population)",
-                                                         "Expected annual impact on builtup area due to coastal floods (hectares)", 
-                                                         "Expected annual impact on builtup area due to coastal floods (% of builtup)"),
-                               `Landslides` = list("Population exposed to landslide hazard (population count)", 
-                                                   "Builtup exposed to landslide hazard (Builtup count)"),
-                               `Drought` = list("Frequency of agricultural stress affecting at least 30% of arable land during Season 1 (percentage of historical period 1984-2022)",
-                                                "Frequency of agricultural stress affecting at least 30% of arable land during Season 2 (percentage of historical period 1984-2022)" ),
-                               `Heat stress` = list("Expected annual exposure of population to very strong heat stress hazard (population count)"),
-                               `Air pollution`= list("Expected increse of mortality from air pollution (population count)"),
-                               `Tropical Cyclone` = list(" Expected annual impact on builtup area due to tropical cyclone (hectares)",
-                                                         "Expected annual impact on builtup area due to tropical cyclone (% of builtup)"),
-                               `Demography` = list("Total number of population in the district (count)"),
-                               `Agriculture & Built-up Area` = list("Total builtup area in the district (hectares)",
-                                                                    "Total  agricultural land in the district (hectares)"),
-                               `Relative Wealth Index` = list('Mean Relative Wealth Index'))) 
+    dis_haz_choices_c3 = (list(
+      `River flooding` = list("Expected annual impact on builtup area due to river floods (hectares)",
+                              "Expected annual impact on builtup area due to river floods (relative)",
+                              "Expected annual mortality due to river floods (population count)",
+                              "Expected annual mortality due to river floods (relative)",
+                              "Expected annual exposure of agricultural land to river floods (hectares)",
+                              "Expected annual exposure of agricultural land to river floods (relative)"),
+      `Coastal flooding` = list("Expected annual impact on builtup area due to coastal floods (hectares)",
+                                "Expected annual impact on builtup area due to coastal floods (relative)",
+                                "Expected annual mortality due to coastal floods (population count)",
+                                "Expected annual mortality due to coastal floods (relative)",
+                                "Expected annual exposure of agricultural land to coastal floods (hectares)",
+                                "Expected annual exposure of agricultural land to coastal floods (relative)"),
+      # `Landslides` = list("Population exposed to landslide hazard (population count)",
+      #                     "Builtup exposed to landslide hazard (Builtup count)"),
+      `Drought` = list("Frequency of agricultural land exposed to drought affecting at least 30% of arable land during period 1984-2022 (growing season 1)",
+                       "Frequency of agricultural land exposed to drought affecting at least 50% of arable land during period 1984-2022 (growing season 1)" ),
+      `Heat stress` = list("Expected annual exposure of population to extreme heat stress hazard (population count)",
+                           "Expected annual exposure of population to extreme heat stress hazard (relative)"),
+      #`Air pollution`= list("Expected increase of mortality from air pollution (population count)"),
+      `Tropical Cyclone` = list("Expected annual impact on builtup area due to tropical cyclone (hectares)",
+                                "Expected annual impact on builtup area due to tropical cyclone (relative)"),
+      `Demography` = list("Number of Population in the district ( in thousands)"),
+      `Agriculture & Built-up Area` = list("Total builtup Area in the district (hectares)",
+                                           "Total agricultural land in the district (hectares)",
+                                           `Relative Wealth Index` = list('Mean Relative Wealth Index',
+                                                                          'Majority Relative Wealth Index')))
+    )
       # hazards_options[-c(11, 24,25,26)]
     updateSelectInput(
       getDefaultReactiveDomain(),
@@ -81,28 +87,33 @@ observeEvent(input$polygon_map2,{
       selected =  dis_haz_choices_c3$`Agriculture & Built-up Area`[[2]]
     )
   }else if(input$polygon_map2 == "Upazila" & input$domain_map2 == "Natural Hazards"){
-    upa_haz_choices_c4 =  (list(`River flooding` = list("Expected mortality from river floods (population count)", 
-                                                        "Expected mortality from river floods (% of population)", 
-                                                        "Expected damage on builtup from river floods (hectares)", 
-                                                        "Expected damage on builtup from river floods (% of builtup)", 
-                                                        "Expected damage on agricultural land from river floods (hectares)"), 
-                                # "Expected exposure of agricultural land to river floods (% of ADM agricultural land)"),
-                                `Coastal flooding` = list("Expected mortality from coastal floods (population count)", 
-                                                          "Expected mortality from coastal floods (% of population)",
-                                                          "Expected annual impact on builtup area due to coastal floods (hectares)", 
-                                                          "Expected annual impact on builtup area due to coastal floods (% of builtup)"),
-                                `Landslides` = list("Population exposed to landslide hazard (population count)", 
-                                                    "Builtup exposed to landslide hazard (Builtup count)"),
-                                `Drought` = list("Frequency of agricultural stress affecting at least 30% of arable land during Season 1 (percentage of historical period 1984-2022)",
-                                                 "Frequency of agricultural stress affecting at least 30% of arable land during Season 2 (percentage of historical period 1984-2022)" ),
-                                `Heat stress` = list("Expected annual exposure of population to very strong heat stress hazard (population count)"),
-                                `Air pollution`= list("Expected increse of mortality from air pollution (population count)"),
-                                `Tropical Cyclone` = list(" Expected annual impact on builtup area due to tropical cyclone (hectares)",
-                                                          "Expected annual impact on builtup area due to tropical cyclone (% of builtup)"),
-                                `Demography` = list("Total number of population in the Upazila (count)"),
-                                `Agriculture & Built-up Area` = list("Total builtup area in the Upazila (hectares)",
-                                                                     "Total  agricultural land in the upazila (hectares)"),
-                                `Relative Wealth Index` = list('Mean Relative Wealth Index'))) 
+    upa_haz_choices_c4 =  (list(
+      `River flooding` = list("Expected annual impact on builtup area due to river floods (hectares)",
+                              "Expected annual impact on builtup area due to river floods (relative)",
+                              "Expected annual mortality due to river floods (population count)",
+                              "Expected annual mortality due to river floods (relative)",
+                              "Expected annual exposure of agricultural land to river floods (hectares)",
+                              "Expected annual exposure of agricultural land to river floods (relative)"),
+      `Coastal flooding` = list("Expected annual impact on builtup area due to coastal floods (hectares)",
+                                "Expected annual impact on builtup area due to coastal floods (relative)",
+                                "Expected annual mortality due to coastal floods (population count)",
+                                "Expected annual mortality due to coastal floods (relative)",
+                                "Expected annual exposure of agricultural land to coastal floods (hectares)",
+                                "Expected annual exposure of agricultural land to coastal floods (relative)"),
+      # `Landslides` = list("Population exposed to landslide hazard (population count)", 
+      #                     "Builtup exposed to landslide hazard (Builtup count)"),
+      `Drought` = list("Frequency of agricultural land exposed to drought affecting at least 30% of arable land during period 1984-2022 (growing season 1)",
+                       "Frequency of agricultural land exposed to drought affecting at least 50% of arable land during period 1984-2022 (growing season 1)" ),
+      `Heat stress` = list("Expected annual exposure of population to extreme heat stress hazard (population count)",
+                           "Expected annual exposure of population to extreme heat stress hazard (relative)"),
+      #`Air pollution`= list("Expected increse of mortality from air pollution (population count)"),
+      `Tropical Cyclone` = list("Expected annual impact on builtup area due to tropical cyclone (hectares)",
+                                "Expected annual impact on builtup area due to tropical cyclone (relative)"),
+      `Demography` = list("Number of Population in the upazila ( in thousands)"),
+      `Agriculture & Built-up Area` = list("Total builtup Area in the upazila (hectares)",
+                                           "Total agricultural land in the upazila (hectares)"),
+      `Relative Wealth Index` = list('Mean Relative Wealth Index',
+                                     'Majority Relative Wealth Index')))
       # hazards_options[-c(1,2,3, 11)]
     updateSelectInput(
       getDefaultReactiveDomain(),
@@ -176,40 +187,46 @@ outputOptions(output, "double_map_2", suspendWhenHidden = FALSE)
   })
   
   breaks_map2 <- reactive({
-    req(unique(map_data2()$context) %in% c("negative", "positive"))
+    req(unique(map_data()$context) %in% c("negative", "positive"))
     if(
-      unique(map_data2()$indicator_1) == "Expected mortality from coastal floods (population count)"||
-      unique(map_data2()$indicator_1) == "Expected mortality from coastal floods (% of population)" ||
-      unique(map_data2()$indicator_1) == "Expected increse of mortality from air pollution (population count)"
+      unique(map_data()$indicator_1) == "Expected annual mortality due to coastal floods (population count)"||
+      unique(map_data()$indicator_1) == "Expected annual mortality due to coastal floods (relative)"
+      # unique(map_data()$indicator_1) == "Expected increse of mortality from air pollution (population count)"
     ){
-      
-      seq(min(map_data2()$value),
-          max(map_data2()$value),
-          (max(map_data2()$value)/3))
+      seq(min(map_data()$value),
+          max(map_data()$value),
+          (max(map_data()$value)/3))
     }
-    else if( unique(map_data2()$indicator_1) == "Expected annual impact on builtup area due to coastal floods (% of builtup)"||
-             unique(map_data2()$indicator_1) == "Expected annual impact on builtup area due to coastal floods (hectares)"){
-      seq(min(map_data2()$value),
-          max(map_data2()$value),
-          (max(map_data2()$value)/2))
-      
-    } else if(unique(map_data2()$indicator_1) == "Expected mortality from river floods (% of population)"||
-              unique(map_data2()$indicator_1) == "Expected mortality from river floods (population count)"||
-              unique(map_data2()$indicator_1) == "Expected damage on builtup from river floods (hectares)"||
-              unique(map_data2()$indicator_1) == "Expected damage on builtup from river floods (% of builtup)"||
-              unique(map_data2()$indicator_1) == "Expected damage on agricultural land from river floods (hectares)"
-              ){
-      quantile(map_data2()$value, seq(0, 1, 1 / (7)), na.rm = TRUE) %>%
+    else if( unique(map_data()$indicator_1) == "Expected annual impact on builtup area due to coastal floods (hectares)" ||
+             unique(map_data()$indicator_1) == "Expected annual impact on builtup area due to coastal floods (relative)"||
+             unique(map_data()$indicator_1) == "Expected annual exposure of agricultural land to coastal floods (hectares)" ||
+             unique(map_data()$indicator_1) == "Expected annual exposure of agricultural land to coastal floods (relative)"
+    ){
+      seq(min(map_data()$value),
+          max(map_data()$value),
+          (max(map_data()$value)/2))
+    } else if
+    (unique(map_data()$indicator_1) == "Expected annual impact on builtup area due to river floods (hectares)"||
+     unique(map_data()$indicator_1) == "Expected annual impact on builtup area due to river floods (relative)"||
+     unique(map_data()$indicator_1) == "Expected annual mortality due to river floods (population count)"||
+     unique(map_data()$indicator_1) == "Expected annual mortality due to river floods (relative)"||
+     unique(map_data()$indicator_1) == "Expected annual exposure of agricultural land to river floods (hectares)" ||
+     unique(map_data()$indicator_1) == "Expected annual exposure of agricultural land to river floods (relative)"
+    )
+    {
+      quantile(map_data()$value, seq(0, 1, 1 / (7)), na.rm = TRUE) %>%
         unique()
       
-    }else if(unique(map_data2()$indicator_1) == "Builtup exposed to landslide hazard (Builtup count)"||
-             unique(map_data2()$indicator_1) == "Population exposed to landslide hazard (population count)"||
-             unique(map_data2()$indicator_1) == "Expected annual impact on builtup area due to tropical cyclone (hectares)"||
-             unique(map_data2()$indicator_1) == "Expected annual impact on builtup area due to tropical cyclone (% of builtup)"
-             ){
-      quantile(map_data2()$value, seq(0, 1, 1 / (8)), na.rm = TRUE) %>%
+    }else if(unique(map_data()$indicator_1) == "Expected annual impact on builtup area due to tropical cyclone (hectares)"||
+             unique(map_data()$indicator_1) == "Expected annual impact on builtup area due to tropical cyclone (relative)"||
+             unique(map_data()$indicator_1) == "Expected annual exposure of population to extreme heat stress hazard (population count)"||
+             unique(map_data()$indicator_1) == "Expected annual exposure of population to extreme heat stress hazard (relative)"||
+             unique(map_data()$indicator_1) == "Frequency of agricultural land exposed to drought affecting at least 30% of arable land during period 1984-2022 (growing season 1)"||
+             unique(map_data()$indicator_1) == "Frequency of agricultural land exposed to drought affecting at least 50% of arable land during period 1984-2022 (growing season 1)" 
+    ){
+      quantile(map_data()$value, seq(0, 1, 1 / (8)), na.rm = TRUE) %>%
         unique()
-    } else{ quantile(map_data2()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
+    } else{ quantile(map_data()$value, seq(0, 1, 1 / (input$bins)), na.rm = TRUE) %>%
         unique()
     }
   })
