@@ -40,7 +40,7 @@ library(stringr)
 ##Read the administrative boundaries
 
 ```{r}
-#District and Upazila BBS
+#District 64 and Upazila 584 BBS
 district_shp <- st_read("./CCDR_Dashboard/raw_data/bgd_shp.gpkg", layer = "District")
 upazila_shp <- st_read("./CCDR_Dashboard/raw_data/bgd_shp.gpkg", layer = "Upazila")
 
@@ -222,7 +222,7 @@ duplicate <- {data} %>%
 
 ```{r}
 bgd_shp <- list(District = district_shp, Upazila = upazila_shp)
-bgd_shp %>% write_rds("/CCDR_Dashboard/data/bgd_shp.RDS")
+bgd_shp %>% write_rds("./CCDR_Dashboard/data/bgd_shp.RDS")
 
 ```
 
