@@ -17,13 +17,13 @@ library(shinydashboard)
 library(shinyWidgets)
 library(leafsync)
 library(highcharter)
-#remotes::install_github("Ebukin/devPTIpack")
+#remotes::install_github("wbPTI/devPTIpack")
 library(devPTIpack)
-#library(maptools)
 #remotes::install_github("rdpeng/gpclib")
 library(gpclib)
 library(waiter)
 library(leaflet.minicharts)
+library(rgeos)
 
 #suppressWarnings(gpclibPermit())
 
@@ -32,16 +32,16 @@ theme_set(theme_light())
 #Read in Data
 # Shape File (Both District + Upazila)
 
-bgd_shp <- readRDS("data/bgd_shp.RDS")
+bgd_shp <- readRDS("./CCDR_Dashboard/data/bgd_shp.RDS")
 
 #Data Set
-data <- readRDS("data/data.RDS")
+data <- readRDS("./CCDR_Dashboard/data/data.RDS")
 
 #PTI Geometries
-pti_shps <-  readRDS("data/bgd_geometries.rds") 
+pti_shps <-  readRDS("./CCDR_Dashboard/data/bgd_geometries.rds") 
 
 #PTI Metadata
-pti_mtdt <- readRDS("data/bgd_metadata_climate.RDS")
+pti_mtdt <- readRDS("./CCDR_Dashboard/data/bgd_metadata_climate.RDS")
 
 #Socio-Economic Indicators List
 development_options <- data %>%
@@ -103,14 +103,14 @@ indicator_listed = (list(`River flooding` = list("Expected annual impact on buil
                                                         'Majority Relative Wealth Index')))
 
 
-legend <- readRDS("data/legend.rds")
-districts <- readRDS("data/district.rds")
-data_pca <- readRDS("data/data_pca.rds")
+legend <- readRDS("./CCDR_Dashboard/data/legend.rds")
+districts <- readRDS("./CCDR_Dashboard/data/districts.rds")
+data_pca <- readRDS("./CCDR_Dashboard/data/data_pca.rds")
 #Feature choices
 mychoices <- list(
-  `Disaster Data` = c(names(data_pca[2:20])),
-  `Survey Data` = c(names(data_pca[21:420])),
-  `Relative Wealth Index` = c(names(data_pca[421]))
+  `Disaster Data` = c(names(data_pca[412:432])),
+  `Survey Data` = c(names(data_pca[11:411])),
+  `Relative Wealth Index` = c(names(data_pca[433:434]))
 )
 
 ################################################################################
@@ -490,7 +490,7 @@ ui <- function(request){
                       mainPanel(
                         width = 12,
                         style="border:1px solid DodgerBlue;",
-                        tags$p(tags$strong(h4("CLIMATE DASHBOARD"))),
+                        tags$p(tags$strong(h4("DISASTER AND CLIMATE RISK DASHBOARD"))),
                         hr(),
                         
                         tags$p(tags$b("Bangladesh is currently among the countries most affected by extreme weather events globally."),
@@ -555,14 +555,14 @@ ui <- function(request){
                         tags$hr(),
                         h4(strong("Github Repository")),
                         br(),
-                        tags$a(href= "https://github.com/zia-foisal/Bangladesh-CCDR-World-Bank", "Repo Link", target="_blank"), br(),
+                        tags$a(href= "https://github.com/zia-foisal/BGD-Disaster-Climate-Risk-Dashboard-World-Bank", "Repo Link", target="_blank"), br(),
                         )),
              tabPanel("FEEDBACK",
                       mainPanel(
                         br(),
                         h4(strong("Please use the link below to register your valued feedback")),
                         br(),
-                        tags$a(href="https://forms.office.com/Pages/DesignPageV2.aspx?subpage=design&token=00c72e08-32ea-4c7b-ac7b-30930d30b274&id=wP6iMWsmZ0y1bieW2PWcNpMxHt0laMlJu7t4ksK2dhVUOVJJUDI3SFRWOTFBRkVKOU5YRjhBV040Si4u",
+                        tags$a(href="https://docs.google.com/forms/d/e/1FAIpQLSeVVPrlGNuAMwyo_t6OR-ibfC4XY43kiqaMog2lxrJrWB0soA/viewform?usp=pp_url",
                                "Register Feedback",
                                target="_blank")
                         )
@@ -592,27 +592,27 @@ server <- function(input, output, session) {
   
 ################################################################################
 #Main Maps
-source(file.path("maps.R"), local = TRUE)
+source(file.path("./CCDR_Dashboard/maps.R"), local = TRUE)
 ################################################################################
   
 ################################################################################
 #Comparison Maps
  # source(file.path("proxy.R"), local = TRUE)
-source(file.path("comparison_maps1.R"), local = TRUE)  
-source(file.path("comparison_maps2.R"), local = TRUE)  
+source(file.path("./CCDR_Dashboard/comparison_maps1.R"), local = TRUE)  
+source(file.path("./CCDR_Dashboard/comparison_maps2.R"), local = TRUE)  
 ################################################################################
 #Bar Charts
-source(file.path('bar_charts.R'), local = TRUE)  
+source(file.path('./CCDR_Dashboard/bar_charts.R'), local = TRUE)  
 ################################################################################
 #Main Tables
-source(file.path("tables.R"), local = TRUE)  
+source(file.path("./CCDR_Dashboard/tables.R"), local = TRUE)  
 #PCA
-source(file.path("pca.R"), local = TRUE)         
+source(file.path("./CCDR_Dashboard/pca.R"), local = TRUE)         
 
 ################################################################################
 ################################################################################
 #PTI Help
-source(file.path("PTI_Help.R"), local= TRUE)
+source(file.path("./CCDR_Dashboard/PTI_Help.R"), local= TRUE)
 #PTI Server Side
 mod_ptipage_newsrv(
   id = "pti_mod",
@@ -623,7 +623,7 @@ mod_ptipage_newsrv(
   
 ################################################################################
 #Data Dwonload
-source(file.path("data_download.R"), local = TRUE)  
+source(file.path("./CCDR_Dashboard/data_download.R"), local = TRUE)  
 ################################################################################
 }
 
