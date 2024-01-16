@@ -10,11 +10,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-#Set the Working Directory
-setwd("E:/Bangladesh-CCDR-World-Bank/")
-
-#Remove everything that is in the workspace
+#Remove everything that is in the global enviroment
 rm(list=ls())
+```
+
+```{r}
+#Set the Working Directory
+setwd("E:/RDL - Bangladesh Integrated Spatial Database/BGD-Disaster-Climate-Risk-Dashboard-World-Bank/")
 ```
 
 
@@ -39,21 +41,8 @@ library(stringr)
 
 ```{r}
 #District and Upazila BBS
-
-bgd_adm0 <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM0") %>% 
-  clean_names()
-
-division_shp <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM1")%>%
-  rename(division = ADM1_NAME) %>% 
-  clean_names()
-
-district_shp <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM2") %>%
-  rename(division = ADM1_NAME, district = ADM2_NAME) %>% 
-  clean_names()
-  
-upazila_shp <- st_read("./CCDR_Dashboard/raw_data/BGD_ADM23.gpkg", layer = "BGD_ADM3") %>% 
-  rename(division = ADM1_NAME , district = ADM2_NAME, upazila = ADM3_NAME) %>% 
-  clean_names()
+district_shp <- st_read("./CCDR_Dashboard/raw_data/bgd_shp.gpkg", layer = "District")
+upazila_shp <- st_read("./CCDR_Dashboard/raw_data/bgd_shp.gpkg", layer = "Upazila")
 
 ```
 
@@ -66,7 +55,7 @@ natural_hazards <- rio::import_list("./CCDR_Dashboard/raw_data/BGD_RSK_23.xlsx")
 
 hazards_district <- natural_hazards[["ADM2_summary"]] %>% 
   as_tibble()%>% 
-  rename(division = ADM1_NAME, district = ADM2_NAME) %>% 
+  #rename(division = ADM1_NAME, district = ADM2_NAME) %>% 
   #select(-ADM0_CODE, -ADM0_NAME, -ADM1_CODE, -ADM2_CODE) %>% 
   rename(dist_population = ADM2_POP) %>% 
   mutate(dist_population = dist_population/1000) %>% 
@@ -82,7 +71,7 @@ hazards_district <- natural_hazards[["ADM2_summary"]] %>%
 hazards_upazila <- natural_hazards[["ADM3_summary"]]%>% 
   as_tibble() %>% 
   #select(-ADM0_CODE, -ADM1_CODE, -ADM2_CODE, -ADM3_CODE, -ADM0_NAME) %>% 
-  rename(division = ADM1_NAME , district = ADM2_NAME, upazila = ADM3_NAME) %>%
+  #rename(division = ADM1_NAME , district = ADM2_NAME, upazila = ADM3_NAME) %>%
   rename(upazila_poplation = ADM3_POP) %>% 
   mutate(upazila_poplation = upazila_poplation/1000) %>%
   pivot_longer(upazila_poplation:`DR_S1_50p_mean` ,names_to = "indicator", values_to = "value") %>% 
@@ -113,17 +102,17 @@ hazards <- bind_rows(hazards_district, hazards_upazila) %>%
 ```{r}
 ##Bringing in Relative Wealth Indices at district and Upazila level
 
-rwi_data <- import_list("/CCDR_Dashboard/raw_data/BGD_RWI_summary.xlsx")
+rwi_data <- import_list("./CCDR_Dashboard/raw_data/BGD_RWI_summary.xlsx")
 
 #district rwi 
-rwi_district <- rwi_data$ADM2_RWI_mean %>% 
-  pivot_longer(rwi_mean, names_to = "indicator", values_to = "value") %>% 
+rwi_district <- rwi_data$ADM2_RWI_Summary %>% 
+  pivot_longer(!district, names_to = "indicator", values_to = "value") %>% 
   mutate(polygon = "District", domain = "Relative Wealth Index") %>% 
   arrange(district)
   
 #Upazila rwi
-rwi_upazila <- rwi_data$ADM3_RWI %>% 
-  pivot_longer(rwi_mean, names_to = "indicator", values_to = "value") %>%
+rwi_upazila <- rwi_data$ADM3_RWI_Summary %>% 
+  pivot_longer(!upazila, names_to = "indicator", values_to = "value") %>%
   mutate(polygon = "Upazila", domain = "Relative Wealth Index") %>% 
   arrange(upazila)
 
@@ -143,16 +132,10 @@ legend <- natural_hazards[["Legend"]] %>%
 ```{r}
 # #Socio-economic Indicator
 
-development_indicators <- readxl::read_excel("/CCDR_Dashboard/raw_data/socioeconomic_indicators_for_bgd_dash_1.xlsx", na="NA")
-
+development_indicators <- read.csv("./CCDR_Dashboard/raw_data/Socioeconomic_BISD.csv", header = TRUE, sep = ",")
 development_indicators$indicator_1 <- lapply(development_indicators$indicator_1 , str_trim)
 development_indicators$polygon <- "District"
 
-
-#since Division is missing in development indicators, bringing in division
-# prov <- district_shp %>% 
-#   as_tibble() %>% 
-#   select(division, district)
 
 development_indicators <- development_indicators %>%
   mutate(domain = "Development Outcomes") %>%
@@ -178,13 +161,20 @@ data <- hazards %>%
 
 ```{r}
 unique_names_data <- data %>%
-  distinct(indicator, indicator_1, unit,	source)
+  distinct(indicator)
 
-sdg_meta <- readxl::read_excel("/CCDR_Dashboard/raw_data/sdg_plus_metadata_glossary.xlsx")
+#write.csv(unique_names_data, "./CCDR_Dashboard/raw_data/legend_bgd_data_test.csv", row.names = FALSE)
+#sdg_meta <- readxl::read_excel("./CCDR_Dashboard/raw_data/sdg_plus_metadata_glossary.xlsx")
 
-unique_names_data$definition <- sdg_meta$Definition[match(unique_names_data$indicator, sdg_meta$Indicators_short_name)]
+unique_names_data$var_description <- data$definition[match(unique_names_data$indicator, data$indicator)]
+unique_names_data$var_name <- data$indicator_1[match(unique_names_data$indicator, data$indicator)]
+unique_names_data$var_description <- data$definition[match(unique_names_data$indicator, data$indicator)]
+unique_names_data$var_units <- data$unit[match(unique_names_data$indicator, data$indicator)]
+unique_names_data$pillar_group <- data$domain[match(unique_names_data$indicator, data$indicator)]
 
-#write.csv(unique_names_data, "./CCDR_Dashboard/raw_data/legend_bgd_data_3.csv", row.names = FALSE)
+#Prepare the legend data using the unique names
+write.csv(unique_names_data, "./CCDR_Dashboard/raw_data/legend_bgd_data_test.csv", row.names = FALSE)
+writexl::write_xlsx(data,"./CCDR_Dashboard/raw_data/data_test.xlsx")
 ```
 
 
