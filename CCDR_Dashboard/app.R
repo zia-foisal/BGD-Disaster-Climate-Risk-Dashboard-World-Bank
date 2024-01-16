@@ -32,16 +32,16 @@ theme_set(theme_light())
 #Read in Data
 # Shape File (Both District + Upazila)
 
-bgd_shp <- readRDS("./CCDR_Dashboard/data/bgd_shp.RDS")
+bgd_shp <- readRDS("./data/bgd_shp.Rds")
 
 #Data Set
-data <- readRDS("./CCDR_Dashboard/data/data.RDS")
+data <- readRDS("./data/data.Rds")
 
 #PTI Geometries
-pti_shps <-  readRDS("./CCDR_Dashboard/data/bgd_geometries.rds") 
+pti_shps <-  readRDS("./data/bgd_geometries.Rds") 
 
 #PTI Metadata
-pti_mtdt <- readRDS("./CCDR_Dashboard/data/bgd_metadata_climate.RDS")
+pti_mtdt <- readRDS("./data/bgd_metadata_climate.Rds")
 
 #Socio-Economic Indicators List
 development_options <- data %>%
@@ -103,9 +103,9 @@ indicator_listed = (list(`River flooding` = list("Expected annual impact on buil
                                                         'Majority Relative Wealth Index')))
 
 
-legend <- readRDS("./CCDR_Dashboard/data/legend.rds")
-districts <- readRDS("./CCDR_Dashboard/data/districts.rds")
-data_pca <- readRDS("./CCDR_Dashboard/data/data_pca.rds")
+legend <- readRDS("./data/legend.Rds")
+districts <- readRDS("./data/districts.Rds")
+data_pca <- readRDS("./data/data_pca.Rds")
 #Feature choices
 mychoices <- list(
   `Disaster Data` = c(names(data_pca[412:432])),
@@ -592,27 +592,27 @@ server <- function(input, output, session) {
   
 ################################################################################
 #Main Maps
-source(file.path("./CCDR_Dashboard/maps.R"), local = TRUE)
+source(file.path("maps.R"), local = TRUE)
 ################################################################################
   
 ################################################################################
 #Comparison Maps
  # source(file.path("proxy.R"), local = TRUE)
-source(file.path("./CCDR_Dashboard/comparison_maps1.R"), local = TRUE)  
-source(file.path("./CCDR_Dashboard/comparison_maps2.R"), local = TRUE)  
+source(file.path("comparison_maps1.R"), local = TRUE)  
+source(file.path("comparison_maps2.R"), local = TRUE)  
 ################################################################################
 #Bar Charts
-source(file.path('./CCDR_Dashboard/bar_charts.R'), local = TRUE)  
+source(file.path('bar_charts.R'), local = TRUE)  
 ################################################################################
 #Main Tables
-source(file.path("./CCDR_Dashboard/tables.R"), local = TRUE)  
+source(file.path("tables.R"), local = TRUE)  
 #PCA
-source(file.path("./CCDR_Dashboard/pca.R"), local = TRUE)         
+source(file.path("pca.R"), local = TRUE)         
 
 ################################################################################
 ################################################################################
 #PTI Help
-source(file.path("./CCDR_Dashboard/PTI_Help.R"), local= TRUE)
+source(file.path("PTI_Help.R"), local= TRUE)
 #PTI Server Side
 mod_ptipage_newsrv(
   id = "pti_mod",
@@ -623,7 +623,7 @@ mod_ptipage_newsrv(
   
 ################################################################################
 #Data Dwonload
-source(file.path("./CCDR_Dashboard/data_download.R"), local = TRUE)  
+source(file.path("data_download.R"), local = TRUE)  
 ################################################################################
 }
 

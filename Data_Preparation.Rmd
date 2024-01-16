@@ -166,14 +166,14 @@ data_final$definition <- mtdta$var_description[match(data_final$indicator , mtdt
 ##Writing the dataset as rds
 
 ```{r}
-write_rds(data_final, file = "./CCDR_Dashboard/data/data.RDS")
+write_rds(data_final, file = "./CCDR_Dashboard/data/data.Rds")
 ```
 
 ##Writing the Bangladesh Boundary data in RDS format
 
 ```{r}
 bgd_shp <- list(District = district_shp, Upazila = upazila_shp)
-bgd_shp %>% write_rds("./CCDR_Dashboard/data/bgd_shp.RDS")
+bgd_shp %>% write_rds("./CCDR_Dashboard/data/bgd_shp.Rds")
 
 ```
 
@@ -227,7 +227,7 @@ upazila_shp <- st_read("./CCDR_Dashboard/raw_data/bgd_shp.gpkg", layer = "Upazil
 bgd_geometries <- list(admin0_Country = admin0_Country, admin2_District = admin2_District)
 
 bgd_geometries %>% 
-  write_rds("./CCDR_Dashboard/data/bgd_geometries.RDS")
+  write_rds("./CCDR_Dashboard/data/bgd_geometries.Rds")
 
 ```
 
@@ -239,7 +239,7 @@ metadata_climate <- import_list("./CCDR_Dashboard/raw_data/bgd_metadata_climate.
 #devPTIpack::validate_metadata(metadata_climate)
 
 metadata_climate %>% 
-  write_rds("./CCDR_Dashboard/data/bgd_metadata_climate.RDS")
+  write_rds("./CCDR_Dashboard/data/bgd_metadata_climate.Rds")
 ```
 
 
@@ -249,28 +249,28 @@ metadata_climate %>%
 
 data_pca <- metadata_climate$admin2_District
 data_pca %>% 
-  write_rds("./CCDR_Dashboard/data/data_pca.RDS")
+  write_rds("./CCDR_Dashboard/data/data_pca.Rds")
 
 ```
 
 #Legend
 ```{r}
 legend_rds <- metadata_climate[["metadata"]]
-write_rds(legend_rds, "./CCDR_Dashboard/data/legend.RDS")
+write_rds(legend_rds, "./CCDR_Dashboard/data/legend.Rds")
 ```
 
 #district
 
 ```{r}
 district <- read.csv("./CCDR_Dashboard/raw_data/district.csv")
-write_rds(district, "./CCDR_Dashboard/data/districts.RDS")
+write_rds(district, "./CCDR_Dashboard/data/districts.Rds")
 ```
 
 #data
 
 ```{r}
 data <- read.csv("./CCDR_Dashboard/raw_data/data_final.csv")
-write_rds(data, "./CCDR_Dashboard/data/data.RDS")
+write_rds(data, "./CCDR_Dashboard/data/data.Rds")
 ```
 
 
