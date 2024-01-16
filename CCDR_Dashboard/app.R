@@ -534,7 +534,7 @@ ui <- function(request){
                                )
                         )
                       ),
-             tabPanel("DOCUMENTATAION",
+             tabPanel("DOCUMENTATION",
                       mainPanel(
                         br(),
                         tags$hr(),
