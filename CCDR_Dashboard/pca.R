@@ -214,7 +214,7 @@ output$var_explained_pcs <- shiny::renderPlot({
   
   sdev_id <- function(){
     pca_scores() %>%
-      dplyr::select(-district) %>%
+      dplyr::select(-c(fid,admin0Pcod,admin0Name,admin1Pcod,division,admin2Pcod,admin2Name,polygon,year,district)) %>%
       purrr::map_df(., purrr::possibly(var, NA_integer_)) %>%
       tidyr::pivot_longer(everything(), names_to = "component", values_to = "value") %>%
       # group_by(component) %>%

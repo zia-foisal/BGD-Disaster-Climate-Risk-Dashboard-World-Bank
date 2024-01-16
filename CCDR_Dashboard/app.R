@@ -118,7 +118,7 @@ mychoices <- list(
 #User Interface
 ################################################################################
 ui <- function(request){
-  navbarPage(" Bangladesh Risk Dashboard",
+  navbarPage(" Bangladesh Disaster and Climate Risk Dashboard",
   header=tags$style(HTML("
   .container-fluid{
   padding: 3px !important;
